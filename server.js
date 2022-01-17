@@ -4,6 +4,8 @@ const morgan = require('morgan');
 
 // Route files
 const users = require('./routes/users');
+const posts = require('./routes/posts');
+const comments = require('./routes/comments');
 
 // Load env variables
 dotenv.config({ path: './config/config.env' });
@@ -17,6 +19,8 @@ if (process.env.NODE_ENV === 'development') {
 
 // Mount routers
 app.use('/api/v1/users', users);
+app.use('/api/v1/posts', posts);
+app.use('/api/v1/comments', comments);
 
 const PORT = process.env.PORT || 3000;
 
