@@ -23,7 +23,7 @@ exports.createUser = (req, res, next) => {
 
 // @desc  UPDATE A USER
 // @route PUT /api/v1/users/:id
-// @access Private
+// @access Private (admin or user)
 exports.updateUser = (req, res, next) => {
 	res
 		.status(200)
@@ -32,7 +32,7 @@ exports.updateUser = (req, res, next) => {
 
 // @desc  DELETE A USER
 // @route DELETE /api/v1/users/:id
-// @access Private (admin only)
+// @access Private (admin or user)
 exports.deleteUser = (req, res, next) => {
 	res
 		.status(200)
