@@ -18,10 +18,13 @@
 	},
 	"homepage": "https://github.com/Sam2Lowry/Belloneyannick_7_20122021#readme",
 	"dependencies": {
+		"@prisma/client": "^3.8.1",
 		"dotenv": "^14.1.0",
-		"express": "^4.17.2"
+		"express": "^4.17.2",
+		"morgan": "^1.10.0"
 	},
 	"devDependencies": {
-		"nodemon": "^2.0.15"
+		"nodemon": "^2.0.15",
+		"prisma": "^3.8.1"
 	}
 }
