@@ -30,7 +30,7 @@ model post {
   author_id     Int       @db.UnsignedInt
   date_creation DateTime  @default(now()) @db.DateTime(0)
   date_update   DateTime  @default(now()) @db.DateTime(0)
-  user          user      @relation(fields: [author_id], references: [id])
+  user          user      @relation(fields: [author_id], references: [id], onDelete: Cascade)
   comment       comment[]
 
   @@index([author_id], name: "FK_AUTHORID")
@@ -43,8 +43,8 @@ model comment {
   author_id     Int      @db.UnsignedInt
   date_creation DateTime @default(now()) @db.DateTime(0)
   date_update   DateTime @default(now()) @db.DateTime(0)
-  user          user     @relation(fields: [author_id], references: [id])
-  post          post     @relation(fields: [post_id], references: [id])
+  user          user     @relation(fields: [author_id], references: [id], onDelete: Cascade)
+  post          post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
 
   @@index([post_id], name: "FK1_POSTID")
   @@index([author_id], name: "FK2_AUTHORID")

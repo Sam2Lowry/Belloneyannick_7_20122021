@@ -1,3 +1,7 @@
+// Importation des modèles Comment de Prisma
+const { PrismaClient } = require('@prisma/client');
+const { comment } = new PrismaClient();
+
 // @desc  GET ALL COMMENTS
 // @route GET /api/v1/comments/
 // @access Public
