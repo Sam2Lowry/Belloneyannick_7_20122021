@@ -1,3 +1,7 @@
+// Importation des modèles Post de Prisma
+const { PrismaClient } = require('@prisma/client');
+const { post } = new PrismaClient();
+
 // @desc  GET ALL POST
 // @route GET /api/v1/posts/
 // @access Public

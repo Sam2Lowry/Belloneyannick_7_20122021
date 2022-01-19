@@ -1,3 +1,7 @@
+// Importation des modèles User de Prisma
+const { PrismaClient } = require('@prisma/client');
+const { user } = new PrismaClient();
+
 // @desc  GET ALL USERS
 // @route GET /api/v1/users/
 // @access Public
@@ -18,7 +22,9 @@ exports.getUser = (req, res, next) => {
 // @route POST /api/v1/users/
 // @access Public
 exports.createUser = (req, res, next) => {
-	res.status(200).json({ success: true, message: 'Create a user' });
+	console.log(req.body);
+	const info = req.body;
+	res.status(200).json({ success: true, message: info });
 };
 
 // @desc  UPDATE A USER
