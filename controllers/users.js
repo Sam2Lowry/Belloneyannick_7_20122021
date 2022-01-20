@@ -10,7 +10,7 @@ exports.getUsers = async (req, res, next) => {
 		const users = await user.findMany();
 		res.status(200).json({ success: true, count: users.length, data: users });
 	} catch (err) {
-		next(err);
+		res.status(500).json({ success: false, error: err.message });
 	}
 };
 
@@ -25,9 +25,13 @@ exports.getUser = async (req, res, next) => {
 				id: Number(id),
 			},
 		});
-		res.status(200).json({ success: true, data: getUser });
+		if (!getUser) {
+			return res.status(404).json({ success: false, error: 'User not found' });
+		} else {
+			res.status(200).json({ success: true, data: getUser });
+		}
 	} catch (err) {
-		next(err);
+		res.status(500).json({ success: false, error: err.message });
 	}
 };
 
@@ -37,9 +41,10 @@ exports.getUser = async (req, res, next) => {
 exports.createUser = async (req, res, next) => {
 	try {
 		await user.create({ data: req.body });
+
 		res.status(201).json({ success: true, data: { message: 'User created' } });
 	} catch (err) {
-		next(err);
+		res.status(500).json({ success: false, error: err.message });
 	}
 };
 
@@ -55,9 +60,10 @@ exports.updateUser = async (req, res, next) => {
 			},
 			data: req.body,
 		});
+
 		res.status(200).json({ success: true, data: { message: 'User updated' } });
 	} catch (err) {
-		next(err);
+		res.status(404).json({ success: false, error: err.message });
 	}
 };
 
@@ -74,6 +80,6 @@ exports.deleteUser = async (req, res, next) => {
 		});
 		res.status(200).json({ success: true, data: { message: 'User deleted' } });
 	} catch (err) {
-		next(err);
+		res.status(400).json({ success: false, error: err.message });
 	}
 };
