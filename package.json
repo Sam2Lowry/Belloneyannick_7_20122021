@@ -7,6 +7,8 @@
 		"dev": "nodemon server",
 		"prod": "NODE_ENV=production node server"
 	},
+	"prisma": {
+		"seed": "node _data/seed.js" },
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Sam2Lowry/Belloneyannick_7_20122021.git"
