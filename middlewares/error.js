@@ -7,24 +7,18 @@ const errorHandler = (err, req, res, next) => {
 
 	// Prisma bad id error
 	if (err.name === 'QueryResultError' && err.message.includes('id')) {
-		return res.status(404).json({
-			status: 'fail',
-			message: 'Resource not found',
-		});
+		const message = `Could not find ${err.path} with id ${err.value}`;
+		error = new ErrorResponse(message, 404);
 	}
 	// Prisma duplicate key error
 	if (err.name === 'QueryResultError' && err.message.includes('duplicate')) {
-		return res.status(409).json({
-			status: 'fail',
-			message: 'Duplicate key',
-		});
+		const message = `Duplicate field value entered`;
+		error = new ErrorResponse(message, 400);
 	}
 	// Prisma validation error
 	if (err.name === 'ValidationError') {
-		return res.status(400).json({
-			status: 'fail',
-			message: err.message,
-		});
+		const message = Object.values(err.errors).map((val) => val.message);
+		error = new ErrorResponse(message, 400);
 	}
 
 	res.status(Error.statusCode || 500).json({
