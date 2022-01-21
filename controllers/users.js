@@ -1,6 +1,7 @@
 // Importation des modèles User de Prisma
 const { PrismaClient } = require('@prisma/client');
 const { user } = new PrismaClient();
+const asyncHandler = require('../middlewares/async');
 
 // @desc  GET ALL USERS
 // @route GET /api/v1/users/
