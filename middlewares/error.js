@@ -1,29 +1,34 @@
+const ErrorResponse = require('../utils/errorResponse');
+
 const errorHandler = (err, req, res, next) => {
-	let error = { ...err }; // Clone err object
-	error.message = err.message; // Add message to error object
+	let error = { ...err };
+
+	error.message = err.message;
 
 	// Log to console for dev
 	console.log(err);
 
-	// Prisma bad id error
-	if (err.name === 'QueryResultError' && err.message.includes('id')) {
-		const message = `Could not find ${err.path} with id ${err.value}`;
+	// Bad ObjectId
+	if (err.name === 'CastError') {
+		const message = `Resource not found`;
 		error = new ErrorResponse(message, 404);
 	}
-	// Prisma duplicate key error
-	if (err.name === 'QueryResultError' && err.message.includes('duplicate')) {
-		const message = `Duplicate field value entered`;
+
+	//  Duplicate key
+	if (err.code === 11000) {
+		const message = 'Duplicate field value entered';
 		error = new ErrorResponse(message, 400);
 	}
-	// Prisma validation error
+
+	// Validation error
 	if (err.name === 'ValidationError') {
 		const message = Object.values(err.errors).map((val) => val.message);
 		error = new ErrorResponse(message, 400);
 	}
 
-	res.status(Error.statusCode || 500).json({
+	res.status(error.statusCode || 500).json({
 		success: false,
-		message: err.message || 'Something went wrong',
+		error: error.message || 'Server Error',
 	});
 };
 

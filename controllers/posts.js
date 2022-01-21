@@ -19,6 +19,15 @@ exports.getPosts = async (req, res, next) => {
 // @access Public
 exports.getAllPosts = async (req, res, next) => {
 	try {
+		const { id } = req.params;
+		const posts = await post.findMany({
+			where: {
+				user: {
+					id: Number(id),
+				},
+			},
+		});
+		res.status(200).json({ success: true, count: posts.length, data: posts });
 	} catch (err) {}
 };
 
@@ -86,3 +95,4 @@ exports.deletePost = async (req, res, next) => {
 		res.status(200).json({ success: true, data: { message: 'Post deleted' } });
 	} catch (err) {}
 };
+
