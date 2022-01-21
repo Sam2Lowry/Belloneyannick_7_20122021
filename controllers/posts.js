@@ -95,3 +95,33 @@ exports.deletePost = async (req, res, next) => {
 		res.status(200).json({ success: true, data: { message: 'Post deleted' } });
 	} catch (err) {}
 };
+
+/*
+app.get('/feed', async (req, res) => {
+  const { searchString, skip, take, orderBy } = req.query
+
+  const or = searchString
+    ? {
+        OR: [
+          { title: { contains: searchString } },
+          { content: { contains: searchString } },
+        ],
+      }
+    : {}
+
+  const posts = await prisma.post.findMany({
+    where: {
+      published: true,
+      ...or,
+    },
+    include: { author: true },
+    take: Number(take) || undefined,
+    skip: Number(skip) || undefined,
+    orderBy: {
+      updatedAt: orderBy || undefined,
+    },
+  })
+
+  res.json(posts)
+})
+*/

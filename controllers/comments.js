@@ -63,12 +63,13 @@ exports.getCommentsByUser = async (req, res, next) => {
 // @access Public
 exports.getComment = async (req, res, next) => {
 	try {
+		const { id } = req.params;
 		await comment.findUnique({
 			where: {
-				id: Number(req.params.id),
+				id: Number(id),
 			},
 		});
-		res.status(200).json({ success: true, data: getComment });
+		res.status(200).json({ success: true, data: comment });
 	} catch (err) {
 		res.status(500).json({ success: false, error: err.message });
 	}

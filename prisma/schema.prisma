@@ -19,8 +19,8 @@ model user {
   role              user_role @default(user)
   date_creation     DateTime  @default(now()) @db.DateTime(0)
   date_update       DateTime  @default(now()) @db.DateTime(0)
-  comment           comment[]
-  post              post[]
+  comment           comment[] // A user can have many comments
+  post              post[] // A user can have many posts
 }
 
 model post {
@@ -31,7 +31,7 @@ model post {
   date_creation DateTime  @default(now()) @db.DateTime(0)
   date_update   DateTime  @default(now()) @db.DateTime(0)
   user          user      @relation(fields: [author_id], references: [id], onDelete: Cascade)
-  comment       comment[]
+  comment       comment[] // A post can have many comments
 
   @@index([author_id], name: "FK_AUTHORID")
 }
