@@ -7,6 +7,7 @@ const colors = require('colors');
 const users = require('./routes/users');
 const posts = require('./routes/posts');
 const comments = require('./routes/comments');
+const auth = require('./routes/auth');
 
 // Load env variables
 dotenv.config({ path: './config/config.env' });
@@ -22,6 +23,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Mount routers
+app.use('/api/v1/auth', auth);
 app.use('/api/v1/users', users);
 app.use('/api/v1/posts', posts);
 app.use('/api/v1/comments', comments);
