@@ -2,9 +2,9 @@
 const { PrismaClient } = require('@prisma/client');
 const { user } = new PrismaClient();
 
-// @desc  CREATE A USER
+// @desc  CREATE A USER FOR TESTING
 // @route POST /api/v1/users/
-// @access Public
+// @access Private (admin only)
 exports.createUser = async (req, res, next) => {
 	try {
 		await user.create({ data: req.body });

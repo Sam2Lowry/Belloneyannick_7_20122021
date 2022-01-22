@@ -85,6 +85,7 @@ exports.login = async (req, res, next) => {
 			userId: userExists.id,
 			email: userExists.email,
 			display_name: userExists.display_name,
+			role: userExists.role,
 		},
 		process.env.JWT_SECRET,
 		{
@@ -97,6 +98,7 @@ exports.login = async (req, res, next) => {
 		userId: userExists.id,
 		email: userExists.email,
 		display_name: userExists.display_name,
+		role: userExists.role,
 	});
 };
 
