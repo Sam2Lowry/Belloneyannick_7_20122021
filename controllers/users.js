@@ -2,6 +2,19 @@
 const { PrismaClient } = require('@prisma/client');
 const { user } = new PrismaClient();
 
+// @desc  CREATE A USER FOR TESTING
+// @route POST /api/v1/users/
+// @access Private (admin only)
+exports.createUser = async (req, res, next) => {
+	try {
+		await user.create({ data: req.body });
+
+		res.status(201).json({ success: true, data: { message: 'User created' } });
+	} catch (err) {
+		res.status(500).json({ success: false, error: err.code });
+	}
+};
+
 // @desc  GET ALL USERS
 // @route GET /api/v1/users/
 // @access Public
@@ -32,19 +45,6 @@ exports.getUser = async (req, res, next) => {
 		}
 	} catch (err) {
 		res.status(500).json({ success: false, error: err.message });
-	}
-};
-
-// @desc  CREATE A USER
-// @route POST /api/v1/users/
-// @access Public
-exports.createUser = async (req, res, next) => {
-	try {
-		await user.create({ data: req.body });
-
-		res.status(201).json({ success: true, data: { message: 'User created' } });
-	} catch (err) {
-		res.status(500).json({ success: false, error: err.code });
 	}
 };
 
