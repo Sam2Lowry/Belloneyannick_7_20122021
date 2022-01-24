@@ -3,7 +3,6 @@ const { PrismaClient } = require('@prisma/client');
 const { user } = new PrismaClient();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
 
 // @desc  CREATE A USER
 // @route POST /api/v1/auth/register
@@ -54,6 +53,12 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
 	const { email, password } = req.body;
 
+	// Check if email or password is empty
+	if (!email || !password) {
+		return res.status(400).json({
+			message: 'user or password is empty',
+		});
+	}
 	// Check for existing user
 	const userExists = await user.findUnique({
 		where: {
@@ -75,7 +80,7 @@ exports.login = async (req, res, next) => {
 	const isMatch = await bcrypt.compare(password, userExists.password);
 
 	if (!isMatch) {
-		return res.status(400).json({
+		return res.status(401).json({
 			message: 'Invalid credentials',
 		});
 	}
@@ -90,7 +95,7 @@ exports.login = async (req, res, next) => {
 		},
 		process.env.JWT_SECRET,
 		{
-			expiresIn: '1h',
+			expiresIn: '30d',
 		}
 	);
 
@@ -106,4 +111,7 @@ exports.login = async (req, res, next) => {
 // @desc Logout user
 // @route GET /api/v1/auth/logout
 // @access Private
-exports.logout = async (req, res, next) => {};
+exports.logout = async (req, res, next) => {
+	try {
+	} catch (error) {}
+};

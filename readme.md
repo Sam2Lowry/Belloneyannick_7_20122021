@@ -19,10 +19,24 @@ Le projet "Groupomania" consiste a construire un réseau social interne pour les
 - It's a fine day
 - what's up ?
 
-### Comment mettre en place le projet :
-- Step 1: this is step 1
-- Step 2: do this, do that
-- step 3: Ho shit, it works !
+### Mise en place du Back-End :
+Depuis votre dossier de travail, vous allez cloner ce dépôt :
+- Step 1: 
+```
+git clone https://github.com/Sam2Lowry/Belloneyannick_7_20122021.git
+```
+- Step 2: 
+```
+cd Belloneyannick_7_20122021
+```
+- step 3: 
+```
+npm install
+```
+- step 4:
+```
+npm run dev
+```
 
 ### Documentation de l'API : 
 | Syntax | Description |
