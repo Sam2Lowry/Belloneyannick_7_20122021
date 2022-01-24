@@ -3,7 +3,6 @@ const { PrismaClient } = require('@prisma/client');
 const { user } = new PrismaClient();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
 
 // @desc  CREATE A USER
 // @route POST /api/v1/auth/register
@@ -90,7 +89,7 @@ exports.login = async (req, res, next) => {
 		},
 		process.env.JWT_SECRET,
 		{
-			expiresIn: '1h',
+			expiresIn: '30d',
 		}
 	);
 
