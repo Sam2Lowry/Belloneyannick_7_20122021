@@ -85,7 +85,7 @@ exports.login = async (req, res, next) => {
 		});
 	}
 
-	// Return jsonwebtoken
+	// Return JWT token if user is valid and password is correct (JWT is a JSON Web Token)
 	const token = jwt.sign(
 		{
 			userId: userExists.id,
@@ -95,17 +95,25 @@ exports.login = async (req, res, next) => {
 		},
 		process.env.JWT_SECRET,
 		{
-			expiresIn: '30d',
+			expiresIn: process.env.JWT_EXPIRE,
 		}
 	);
-
-	res.status(200).json({
-		token,
-		userId: userExists.id,
-		email: userExists.email,
-		display_name: userExists.display_name,
-		role: userExists.role,
-	});
+	// Setup options for cookie
+	const options = {
+		expires: new Date(
+			Date.now() + process.env.JWT_EXPIRE * 24 * 60 * 60 * 1000
+		),
+		httpOnly: true,
+	};
+	// Secure options for cookie in production
+	if (process.env.NODE_ENV === 'production') {
+		options.secure = true;
+	}
+	// Set cookie with token and options
+	res
+		.cookie('token', token, options)
+		.status(200)
+		.json({ success: true, token });
 };
 
 // @desc Logout user
