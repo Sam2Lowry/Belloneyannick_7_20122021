@@ -8,7 +8,9 @@ const {
 	updateComment,
 	deleteComment,
 } = require('../controllers/comments');
+
 const router = express.Router();
+const { protect } = require('../middlewares/auth');
 
 router.route('/').get(getComments).post(createComment);
 router
