@@ -53,6 +53,12 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
 	const { email, password } = req.body;
 
+	// Check if email or password is empty
+	if (!email || !password) {
+		return res.status(400).json({
+			message: 'user or password is empty',
+		});
+	}
 	// Check for existing user
 	const userExists = await user.findUnique({
 		where: {
@@ -105,4 +111,7 @@ exports.login = async (req, res, next) => {
 // @desc Logout user
 // @route GET /api/v1/auth/logout
 // @access Private
-exports.logout = async (req, res, next) => {};
+exports.logout = async (req, res, next) => {
+	try {
+	} catch (error) {}
+};
