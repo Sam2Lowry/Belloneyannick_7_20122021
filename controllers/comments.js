@@ -11,6 +11,11 @@ exports.getComments = async (req, res, next) => {
 		res
 			.status(200)
 			.json({ success: true, count: comments.length, data: comments });
+		if (comments.length === 0) {
+			return res
+				.status(404)
+				.json({ success: false, error: 'No comments found' });
+		}
 	} catch (err) {
 		res.status(500).json({ success: false, error: err.message });
 	}
@@ -29,6 +34,11 @@ exports.getCommentsByPost = async (req, res, next) => {
 				},
 			},
 		});
+		if (comments.length === 0) {
+			return res
+				.status(404)
+				.json({ success: false, error: 'No comments found' });
+		}
 		res
 			.status(200)
 			.json({ success: true, count: comments.length, data: comments });
@@ -50,6 +60,11 @@ exports.getCommentsByUser = async (req, res, next) => {
 				},
 			},
 		});
+		if (comments.length === 0) {
+			return res
+				.status(404)
+				.json({ success: false, error: 'No comments found' });
+		}
 		res
 			.status(200)
 			.json({ success: true, count: comments.length, data: comments });
@@ -69,6 +84,11 @@ exports.getComment = async (req, res, next) => {
 				id: Number(id),
 			},
 		});
+		if (!comment) {
+			return res
+				.status(404)
+				.json({ success: false, error: 'No comment found' });
+		}
 		res.status(200).json({ success: true, data: comment });
 	} catch (err) {
 		res.status(500).json({ success: false, error: err.message });

@@ -48,3 +48,16 @@ exports.protect = async (req, res, next) => {
 		console.log(err);
 	}
 };
+
+// Grant access to specific roles only (user or admin)
+// If the user's role is not in the list of roles passed to the authorize function, return a 403 error.
+exports.authorize = (...roles) => {
+	return (req, res, next) => {
+		if (!roles.includes(req.user.role)) {
+			return res.status(403).json({
+				message: 'You are not authorized to perform this action',
+			});
+		}
+		next();
+	};
+};

@@ -8,6 +8,9 @@ const { post } = new PrismaClient();
 exports.getPosts = async (req, res, next) => {
 	try {
 		const posts = await post.findMany();
+		if (!posts) {
+			return res.status(404).json({ success: false, error: 'No posts found' });
+		}
 		res.status(200).json({ success: true, count: posts.length, data: posts });
 	} catch (err) {
 		res.status(500).json({ success: false, error: err.message });
@@ -27,6 +30,9 @@ exports.getAllPosts = async (req, res, next) => {
 				},
 			},
 		});
+		if (!posts) {
+			return res.status(404).json({ success: false, error: 'Post not found' });
+		}
 		res.status(200).json({ success: true, count: posts.length, data: posts });
 	} catch (err) {}
 };
@@ -75,6 +81,10 @@ exports.updatePost = async (req, res, next) => {
 			},
 			data: req.body,
 		});
+		if (!post) {
+			return res.status(404).json({ success: false, error: 'Post not found' });
+		}
+		res.status(200).json({ success: true, data: { message: 'Post updated' } });
 	} catch (err) {
 		res.status(500).json({ success: false, error: err.message });
 	}
@@ -91,8 +101,11 @@ exports.deletePost = async (req, res, next) => {
 				id: Number(id),
 			},
 		});
-
+		if (!post) {
+			return res.status(404).json({ success: false, error: 'Post not found' });
+		}
 		res.status(200).json({ success: true, data: { message: 'Post deleted' } });
-	} catch (err) {}
+	} catch (err) {
+		res.status(500).json({ success: false, error: err.message });
+	}
 };
-
