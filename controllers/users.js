@@ -60,13 +60,19 @@ exports.updateUser = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		await user.delete({
-			where: {
-				id: Number(id),
-			},
-		});
-		res.status(200).json({ success: true, data: { message: 'User deleted' } });
+		if (req.user.id === Number(id) || req.user.role === 'admin') {
+			await user.delete({
+				where: {
+					id: Number(id),
+				},
+			});
+			res
+				.status(200)
+				.json({ success: true, data: { message: 'User deleted' } });
+		} else {
+			res.status(401).json({ success: false, error: 'Unauthorized' });
+		}
 	} catch (err) {
-		res.status(400).json({ success: false, error: err.message });
+		res.status(500).json({ success: false, error: err.message });
 	}
 };
