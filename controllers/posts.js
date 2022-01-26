@@ -79,20 +79,28 @@ exports.createPost = async (req, res, next) => {
 
 // @desc  UPDATE A POST
 // @route PUT /api/v1/posts/:id
-// @access Private (admin or user)
+// @access Private (admin or user) from roles
 exports.updatePost = async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		await post.update({
-			where: {
-				id: Number(id),
-			},
-			data: req.body,
-		});
-		if (!post) {
-			return res.status(404).json({ success: false, error: 'Post not found' });
+		const { title, content, author_id, post_id } = req.body;
+		const { userId, role } = jwt.decode(request.cookies.token);
+		if (role === 'admin' || author_id === userId) {
+			const updatePost = await post.update({
+				where: {
+					id: Number(id),
+				},
+				data: {
+					title: title,
+					content: content,
+					author_id: author_id,
+					post_id: post_id,
+				},
+			});
+			res.status(200).json({ success: true, data: updatePost });
+		} else {
+			res.status(401).json({ success: false, error: 'Unauthorized' });
 		}
-		res.status(200).json({ success: true, data: { message: 'Post updated' } });
 	} catch (err) {
 		res.status(500).json({ success: false, error: err.message });
 	}
