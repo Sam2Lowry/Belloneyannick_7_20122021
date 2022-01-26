@@ -26,7 +26,7 @@ exports.getUser = async (req, res, next) => {
 			},
 		});
 		if (!getUser) {
-			return res.status(404).json({ success: false, error: 'User not found' });
+			return res.status(400).json({ success: false, error: 'User not found' });
 		} else {
 			res.status(200).json({ success: true, data: getUser });
 		}

@@ -32,6 +32,14 @@ app.use('/api/v1/users', users);
 app.use('/api/v1/posts', posts);
 app.use('/api/v1/comments', comments);
 
+// Handle unhandled Routes
+app.all('*', (req, res, next) => {
+	res.status(404).json({
+		status: 'fail',
+		message: `Route ${req.originalUrl} not found on this server`,
+	});
+});
+
 const PORT = process.env.PORT || 3000;
 
 const server = app.listen(
