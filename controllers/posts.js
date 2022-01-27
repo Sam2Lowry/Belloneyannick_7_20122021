@@ -117,7 +117,7 @@ exports.updatePost = async (req, res, next) => {
 exports.deletePost = async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		await post.delete({
+		const post = await post.findUnique({
 			where: {
 				id: Number(id),
 			},
@@ -125,7 +125,17 @@ exports.deletePost = async (req, res, next) => {
 		if (!post) {
 			return res.status(404).json({ success: false, error: 'Post not found' });
 		}
-		res.status(200).json({ success: true, data: { message: 'Post deleted' } });
+		// Make sure the user is the author of the post or an admin
+		if (post.author_id !== req.user.id && req.user.role !== 'admin') {
+			return res.status(401).json({ success: false, error: 'Unauthorized' });
+		}
+
+		const deletedPost = await post.delete({
+			where: {
+				id: Number(id),
+			},
+		});
+		res.status(200).json({ success: true, data: deletedPost });
 	} catch (err) {
 		res.status(500).json({ success: false, error: err.message });
 	}
