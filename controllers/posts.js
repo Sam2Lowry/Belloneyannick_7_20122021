@@ -92,7 +92,10 @@ exports.updatePost = async (req, res, next) => {
 			return res.status(404).json({ success: false, error: 'Post not found' });
 		}
 		// Make sure the user is the author of the post or an admin
-		if (post.author_id !== req.user.id && req.user.role !== 'admin') {
+		if (
+			post.author_id.toString() !== req.user.id &&
+			req.user.role !== 'admin'
+		) {
 			return res.status(401).json({ success: false, error: 'Unauthorized' });
 		}
 		const { title, content } = req.body;
@@ -126,7 +129,10 @@ exports.deletePost = async (req, res, next) => {
 			return res.status(404).json({ success: false, error: 'Post not found' });
 		}
 		// Make sure the user is the author of the post or an admin
-		if (post.author_id !== req.user.id && req.user.role !== 'admin') {
+		if (
+			post.author_id.toString() !== req.user.id &&
+			req.user.role !== 'admin'
+		) {
 			return res.status(401).json({ success: false, error: 'Unauthorized' });
 		}
 
