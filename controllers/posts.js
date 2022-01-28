@@ -1,6 +1,7 @@
 // Importation des modèles Post de Prisma
 const { PrismaClient } = require('@prisma/client');
 const { post } = new PrismaClient();
+const jwt = require('jsonwebtoken');
 
 // @desc  GET ALL POST
 // @route GET /api/v1/posts/
@@ -62,7 +63,8 @@ exports.getPost = async (req, res, next) => {
 // @access Public
 exports.createPost = async (req, res, next) => {
 	try {
-		const userId = jwt.decode(request.cookies.token);
+		const { userId } = jwt.decode(req.cookies.token);
+		console.log(userId);
 		const { title, content } = req.body;
 		const newPost = await post.create({
 			data: {
