@@ -42,31 +42,26 @@ exports.getUser = async (req, res, next) => {
 // @access Private (admin or user)
 exports.updateUser = async (req, res, next) => {
 	try {
-		const { id } = req.params;
-		const user = await user.findUnique({
-			where: {
-				id: Number(id),
-			},
-		});
-		if (!user) {
-			return res.status(404).json({ success: false, error: 'user not found' });
+		try {
+			const { id } = req.params;
+			const { userId, role } = jwt.decode(req.cookies.token);
+			if (role === 'admin' || userId === parseInt(req.params.id)) {
+				await user.update({
+					where: {
+						id: Number(id),
+					},
+					data: {
+						...req.body,
+					},
+				});
+				return res
+					.status(200)
+					.json({ success: true, data: { message: 'User updated' } });
+			} else
+				return res.status(401).json({ success: false, error: 'Unauthorized' });
+		} catch (err) {
+			res.status(500).json({ success: false, error: err.message });
 		}
-		// Check if user is admin or user is updating his own profile
-		if (user.id.toString() !== req.user.id && req.user.role !== 'admin') {
-			return res.status(401).json({ success: false, error: 'Unauthorized' });
-		}
-		const updateUser = await user.update({
-			data: {
-				...req.body,
-			},
-			where: {
-				id: Number(id),
-			},
-		});
-		res.status(200).json({ success: true, data: updateUser });
-	} catch (err) {
-		res.status(404).json({ success: false, error: err.message });
-	}
 };
 
 // @desc  DELETE A USER
