@@ -47,32 +47,6 @@ exports.getCommentsByPost = async (req, res, next) => {
 	}
 };
 
-// @desc  GET ALL COMMENTS BY USER
-// @route GET /api/v1/comments/user/:id
-// @access Public
-exports.getCommentsByUser = async (req, res, next) => {
-	try {
-		const { id } = req.params;
-		const comments = await comment.findMany({
-			where: {
-				user: {
-					id: Number(id),
-				},
-			},
-		});
-		if (comments.length === 0) {
-			return res
-				.status(404)
-				.json({ success: false, error: 'No comments found' });
-		}
-		res
-			.status(200)
-			.json({ success: true, count: comments.length, data: comments });
-	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
-	}
-};
-
 // @desc  GET A SINGLE COMMENT
 // @route GET /api/v1/comments/:id
 // @access Public
@@ -100,28 +74,18 @@ exports.getComment = async (req, res, next) => {
 // @access Public
 exports.createComment = async (req, res, next) => {
 	try {
-		await comment.create({ data: req.body });
+		const { content, postId } = req.body;
+		const { userId } = jwt.decode(request.cookies.token);
+		await comment.create({
+			data: {
+				content: content,
+				postId: postId,
+				author_id: userId,
+			},
+		});
 		res
 			.status(201)
 			.json({ success: true, data: { message: 'Comment created' } });
-	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
-	}
-};
-
-// @desc  UPDATE A COMMENT
-// @route PUT /api/v1/comments/:id
-// @access Private (admin or user)
-exports.updateComment = async (req, res, next) => {
-	try {
-		const { id } = req.params;
-		const updateComment = await comment.update({
-			where: {
-				id: Number(id),
-			},
-			data: req.body,
-		});
-		res.status(200).json({ success: true, data: updateComment });
 	} catch (err) {
 		res.status(500).json({ success: false, error: err.message });
 	}
