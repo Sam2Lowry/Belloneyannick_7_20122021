@@ -1,5 +1,7 @@
 // Importation des modèles User de Prisma
 const { PrismaClient } = require('@prisma/client');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 const { user } = new PrismaClient();
 
 // @desc  GET ALL USERS
@@ -41,14 +43,27 @@ exports.getUser = async (req, res, next) => {
 exports.updateUser = async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		await user.update({
+		const user = await user.findUnique({
 			where: {
 				id: Number(id),
 			},
-			data: req.body,
 		});
-
-		res.status(200).json({ success: true, data: { message: 'User updated' } });
+		if (!user) {
+			return res.status(404).json({ success: false, error: 'user not found' });
+		}
+		// Check if user is admin or user is updating his own profile
+		if (user.id.toString() !== req.user.id && req.user.role !== 'admin') {
+			return res.status(401).json({ success: false, error: 'Unauthorized' });
+		}
+		const updateUser = await user.update({
+			data: {
+				...req.body,
+			},
+			where: {
+				id: Number(id),
+			},
+		});
+		res.status(200).json({ success: true, data: updateUser });
 	} catch (err) {
 		res.status(404).json({ success: false, error: err.message });
 	}
@@ -60,18 +75,18 @@ exports.updateUser = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		if (req.user.id === Number(id) || req.user.role === 'admin') {
+		const { userId, role } = jwt.decode(req.cookies.token);
+		if (role === 'admin' || userId === parseInt(req.params.id)) {
 			await user.delete({
 				where: {
 					id: Number(id),
 				},
 			});
-			res
+			return res
 				.status(200)
 				.json({ success: true, data: { message: 'User deleted' } });
-		} else {
-			res.status(401).json({ success: false, error: 'Unauthorized' });
-		}
+		} else
+			return res.status(401).json({ success: false, error: 'Unauthorized' });
 	} catch (err) {
 		res.status(500).json({ success: false, error: err.message });
 	}

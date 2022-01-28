@@ -64,10 +64,6 @@ exports.login = async (req, res, next) => {
 		where: {
 			email,
 		},
-		select: {
-			email: true,
-			password: true,
-		},
 	});
 
 	if (!userExists) {
@@ -93,11 +89,12 @@ exports.login = async (req, res, next) => {
 			display_name: userExists.display_name,
 			role: userExists.role,
 		},
-		process.env.JWT_SECRET,
+		'SECRET_KEY',
 		{
 			expiresIn: process.env.JWT_EXPIRE,
 		}
 	);
+
 	// Setup options for cookie
 	const options = {
 		expires: new Date(

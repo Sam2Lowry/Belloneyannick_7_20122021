@@ -3,7 +3,6 @@ const express = require('express');
 const { register, login, logout } = require('../controllers/auth');
 
 const router = express.Router();
-
 const { protect } = require('../middlewares/auth');
 
 router.route('/register').post(register);

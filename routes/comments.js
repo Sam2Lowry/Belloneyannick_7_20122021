@@ -10,7 +10,7 @@ const {
 } = require('../controllers/comments');
 
 const router = express.Router();
-const { protect } = require('../middlewares/auth');
+const { protect, authorize } = require('../middlewares/auth');
 
 router.route('/').get(getComments).post(createComment);
 router
