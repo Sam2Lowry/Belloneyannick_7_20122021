@@ -42,26 +42,26 @@ exports.getUser = async (req, res, next) => {
 // @access Private (admin or user)
 exports.updateUser = async (req, res, next) => {
 	try {
-		try {
-			const { id } = req.params;
-			const { userId, role } = jwt.decode(req.cookies.token);
-			if (role === 'admin' || userId === parseInt(req.params.id)) {
-				await user.update({
-					where: {
-						id: Number(id),
-					},
-					data: {
-						...req.body,
-					},
-				});
-				return res
-					.status(200)
-					.json({ success: true, data: { message: 'User updated' } });
-			} else
-				return res.status(401).json({ success: false, error: 'Unauthorized' });
-		} catch (err) {
-			res.status(500).json({ success: false, error: err.message });
+		const { id } = req.params;
+		const { userId, role } = jwt.decode(req.cookies.token);
+		if (role === 'admin' || userId === parseInt(req.params.id)) {
+			await user.update({
+				where: {
+					id: Number(id),
+				},
+				data: {
+					...req.body,
+				},
+			});
+			return res
+				.status(200)
+				.json({ success: true, data: { message: 'User updated' } });
+		} else {
+			return res.status(401).json({ success: false, error: 'Unauthorized' });
 		}
+	} catch (err) {
+		return res.status(500).json({ success: false, error: err.message });
+	}
 };
 
 // @desc  DELETE A USER
