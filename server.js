@@ -40,6 +40,16 @@ app.all('*', (req, res, next) => {
 	});
 });
 
+// Error handler
+app.use((err, req, res, next) => {
+	console.log(err.stack.red);
+	res.status(err.status || 500);
+	res.send({
+		status: err.status || 500,
+		message: err.message,
+	});
+});
+
 const PORT = process.env.PORT || 3000;
 
 const server = app.listen(

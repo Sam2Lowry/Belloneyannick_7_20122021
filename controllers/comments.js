@@ -1,6 +1,7 @@
 // Importation des modèles Comment de Prisma
 const { PrismaClient } = require('@prisma/client');
 const { comment } = new PrismaClient();
+const jwt = require('jsonwebtoken');
 
 // @desc  GET ALL COMMENTS
 // @route GET /api/v1/comments/
@@ -47,82 +48,34 @@ exports.getCommentsByPost = async (req, res, next) => {
 	}
 };
 
-// @desc  GET ALL COMMENTS BY USER
-// @route GET /api/v1/comments/user/:id
-// @access Public
-exports.getCommentsByUser = async (req, res, next) => {
-	try {
-		const { id } = req.params;
-		const comments = await comment.findMany({
-			where: {
-				user: {
-					id: Number(id),
-				},
-			},
-		});
-		if (comments.length === 0) {
-			return res
-				.status(404)
-				.json({ success: false, error: 'No comments found' });
-		}
-		res
-			.status(200)
-			.json({ success: true, count: comments.length, data: comments });
-	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
-	}
-};
-
-// @desc  GET A SINGLE COMMENT
-// @route GET /api/v1/comments/:id
-// @access Public
-exports.getComment = async (req, res, next) => {
-	try {
-		const { id } = req.params;
-		await comment.findUnique({
-			where: {
-				id: Number(id),
-			},
-		});
-		if (!comment) {
-			return res
-				.status(404)
-				.json({ success: false, error: 'No comment found' });
-		}
-		res.status(200).json({ success: true, data: comment });
-	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
-	}
-};
-
 // @desc  CREATE A COMMENT
 // @route POST /api/v1/comments/
 // @access Public
 exports.createComment = async (req, res, next) => {
 	try {
-		await comment.create({ data: req.body });
+		const { userId } = jwt.decode(req.cookies.token);
+		console.log(userId);
+		const { commentTxt, postId } = req.body;
+		const newComment = await comment.create({
+			data: {
+				content: commentTxt,
+				post: {
+					connect: {
+						id: Number(postId),
+					},
+				},
+				user: {
+					connect: {
+						id: Number(userId),
+					},
+				},
+			},
+		});
 		res
 			.status(201)
 			.json({ success: true, data: { message: 'Comment created' } });
 	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
-	}
-};
-
-// @desc  UPDATE A COMMENT
-// @route PUT /api/v1/comments/:id
-// @access Private (admin or user)
-exports.updateComment = async (req, res, next) => {
-	try {
-		const { id } = req.params;
-		const updateComment = await comment.update({
-			where: {
-				id: Number(id),
-			},
-			data: req.body,
-		});
-		res.status(200).json({ success: true, data: updateComment });
-	} catch (err) {
+		console.log(err);
 		res.status(500).json({ success: false, error: err.message });
 	}
 };
@@ -133,12 +86,28 @@ exports.updateComment = async (req, res, next) => {
 exports.deleteComment = async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		const deleteComment = await comment.delete({
+		const { userId, role } = jwt.decode(req.cookies.token);
+		const post = await comment.findUnique({
 			where: {
 				id: Number(id),
 			},
 		});
-		res.status(200).json({ success: true, data: deleteComment });
+		if (!post) {
+			return res
+				.status(404)
+				.json({ success: false, error: 'Comment not found' });
+		}
+		// Make sure the user is the author of the post or an admin
+		if (userId !== post.author_id && role !== 'admin') {
+			return res.status(401).json({ success: false, error: 'Unauthorized' });
+		}
+
+		const deletedComment = await comment.delete({
+			where: {
+				id: Number(id),
+			},
+		});
+		res.status(200).json({ success: true, data: deletedComment });
 	} catch (err) {
 		res.status(500).json({ success: false, error: err.message });
 	}

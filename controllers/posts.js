@@ -1,6 +1,7 @@
 // Importation des modèles Post de Prisma
 const { PrismaClient } = require('@prisma/client');
 const { post } = new PrismaClient();
+const jwt = require('jsonwebtoken');
 
 // @desc  GET ALL POST
 // @route GET /api/v1/posts/
@@ -62,7 +63,8 @@ exports.getPost = async (req, res, next) => {
 // @access Public
 exports.createPost = async (req, res, next) => {
 	try {
-		const userId = jwt.decode(request.cookies.token);
+		const { userId } = jwt.decode(req.cookies.token);
+		console.log(userId);
 		const { title, content } = req.body;
 		const newPost = await post.create({
 			data: {
@@ -82,6 +84,7 @@ exports.createPost = async (req, res, next) => {
 // @access Private (admin or user) from roles
 exports.updatePost = async (req, res, next) => {
 	try {
+		const { userId, role } = jwt.decode(req.cookies.token);
 		const { id } = req.params;
 		const post = await post.findUnique({
 			where: {
@@ -92,10 +95,7 @@ exports.updatePost = async (req, res, next) => {
 			return res.status(404).json({ success: false, error: 'Post not found' });
 		}
 		// Make sure the user is the author of the post or an admin
-		if (
-			post.author_id.toString() !== req.user.id &&
-			req.user.role !== 'admin'
-		) {
+		if (userId !== post.author_id && role !== 'admin') {
 			return res.status(401).json({ success: false, error: 'Unauthorized' });
 		}
 		const { title, content } = req.body;
@@ -120,6 +120,7 @@ exports.updatePost = async (req, res, next) => {
 exports.deletePost = async (req, res, next) => {
 	try {
 		const { id } = req.params;
+		const { userId, role } = jwt.decode(req.cookies.token);
 		const post = await post.findUnique({
 			where: {
 				id: Number(id),
@@ -129,10 +130,7 @@ exports.deletePost = async (req, res, next) => {
 			return res.status(404).json({ success: false, error: 'Post not found' });
 		}
 		// Make sure the user is the author of the post or an admin
-		if (
-			post.author_id.toString() !== req.user.id &&
-			req.user.role !== 'admin'
-		) {
+		if (userId !== post.author_id && role !== 'admin') {
 			return res.status(401).json({ success: false, error: 'Unauthorized' });
 		}
 

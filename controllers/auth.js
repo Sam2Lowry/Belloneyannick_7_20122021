@@ -89,7 +89,7 @@ exports.login = async (req, res, next) => {
 			display_name: userExists.display_name,
 			role: userExists.role,
 		},
-		'SECRET_KEY',
+		process.env.JWT_SECRET,
 		{
 			expiresIn: process.env.JWT_EXPIRE,
 		}
@@ -118,5 +118,13 @@ exports.login = async (req, res, next) => {
 // @access Private
 exports.logout = async (req, res, next) => {
 	try {
-	} catch (error) {}
+		res.clearCookie('token');
+		res.status(200).json({
+			message: 'User logged out',
+		});
+	} catch (error) {
+		res.status(500).json({
+			message: 'Error logging out user',
+		});
+	}
 };
