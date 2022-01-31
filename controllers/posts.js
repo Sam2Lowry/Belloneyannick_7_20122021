@@ -121,16 +121,16 @@ exports.deletePost = async (req, res, next) => {
 	try {
 		const { id } = req.params;
 		const { userId, role } = jwt.decode(req.cookies.token);
-		const post = await post.findUnique({
+		const postExist = await post.findUnique({
 			where: {
 				id: Number(id),
 			},
 		});
-		if (!post) {
+		if (!postExist) {
 			return res.status(404).json({ success: false, error: 'Post not found' });
 		}
 		// Make sure the user is the author of the post or an admin
-		if (userId !== post.author_id && role !== 'admin') {
+		if (userId === post.author_id || role === 'admin') {
 			return res.status(401).json({ success: false, error: 'Unauthorized' });
 		}
 
