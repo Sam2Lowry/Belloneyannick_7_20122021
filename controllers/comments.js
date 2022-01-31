@@ -3,25 +3,6 @@ const { PrismaClient } = require('@prisma/client');
 const { comment } = new PrismaClient();
 const jwt = require('jsonwebtoken');
 
-// @desc  GET ALL COMMENTS
-// @route GET /api/v1/comments/
-// @access Public
-exports.getComments = async (req, res, next) => {
-	try {
-		const comments = await comment.findMany();
-		res
-			.status(200)
-			.json({ success: true, count: comments.length, data: comments });
-		if (comments.length === 0) {
-			return res
-				.status(404)
-				.json({ success: false, error: 'No comments found' });
-		}
-	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
-	}
-};
-
 // @desc  GET ALL COMMENTS BY POST
 // @route GET /api/v1/comments/post/:id
 // @access Public
@@ -54,7 +35,9 @@ exports.getCommentsByPost = async (req, res, next) => {
 exports.createComment = async (req, res, next) => {
 	try {
 		const { userId } = jwt.decode(req.cookies.token);
-		console.log(userId);
+		if (!userId) {
+			return res.status(401).json({ success: false, error: 'Unauthorized' });
+		}
 		const { commentTxt, postId } = req.body;
 		const newComment = await comment.create({
 			data: {
@@ -87,18 +70,18 @@ exports.deleteComment = async (req, res, next) => {
 	try {
 		const { id } = req.params;
 		const { userId, role } = jwt.decode(req.cookies.token);
-		const post = await comment.findUnique({
+		const commentExist = await comment.findUnique({
 			where: {
 				id: Number(id),
 			},
 		});
-		if (!post) {
+		if (!commentExist) {
 			return res
 				.status(404)
 				.json({ success: false, error: 'Comment not found' });
 		}
-		// Make sure the user is the author of the post or an admin
-		if (userId !== post.author_id && role !== 'admin') {
+		// Make sure the user is the author of the comment or an admin
+		if (userId === comment.author_id || role === 'admin') {
 			return res.status(401).json({ success: false, error: 'Unauthorized' });
 		}
 
