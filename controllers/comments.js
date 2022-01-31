@@ -35,7 +35,9 @@ exports.getCommentsByPost = async (req, res, next) => {
 exports.createComment = async (req, res, next) => {
 	try {
 		const { userId } = jwt.decode(req.cookies.token);
-		console.log(userId);
+		if (!userId) {
+			return res.status(401).json({ success: false, error: 'Unauthorized' });
+		}
 		const { commentTxt, postId } = req.body;
 		const newComment = await comment.create({
 			data: {
