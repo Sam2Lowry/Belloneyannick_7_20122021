@@ -1,7 +1,6 @@
 const express = require('express');
 const {
 	getComments,
-	getComment,
 	getCommentsByPost,
 	createComment,
 	deleteComment,
@@ -10,11 +9,7 @@ const {
 const router = express.Router();
 const { protect, authorize } = require('../middlewares/auth');
 
-router.route('/').get(getComments).post(createComment);
-router
-	.route('/:id')
-	.get(getComment)
-	.get(getCommentsByPost)
-	.delete(deleteComment);
-
+router.route('/').get(getComments, protect).post(createComment, protect);
+router.route('/:id').delete(deleteComment, protect, authorize('admin'));
+router.route('/post/:id').get(getCommentsByPost, protect);
 module.exports = router;
