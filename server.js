@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
 const cookieParser = require('cookie-parser');
+const errorHandler = require('./middlewares/error');
 
 // Route files
 const users = require('./routes/users');
@@ -32,7 +33,7 @@ app.use('/api/v1/users', users);
 app.use('/api/v1/posts', posts);
 app.use('/api/v1/comments', comments);
 
-// Handle unhandled Routes
+// Handle Unhandled routes
 app.all('*', (req, res, next) => {
 	res.status(404).json({
 		status: 'fail',
@@ -41,17 +42,9 @@ app.all('*', (req, res, next) => {
 });
 
 // Error handler
-app.use((err, req, res, next) => {
-	console.log(err.stack.red);
-	res.status(err.status || 500);
-	res.send({
-		status: err.status || 500,
-		message: err.message,
-	});
-});
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
-
 const server = app.listen(
 	PORT,
 	console.log(

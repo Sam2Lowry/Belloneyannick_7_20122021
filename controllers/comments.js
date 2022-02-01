@@ -2,6 +2,7 @@
 const { PrismaClient } = require('@prisma/client');
 const { comment } = new PrismaClient();
 const jwt = require('jsonwebtoken');
+const asyncHandler = require('../middlewares/async');
 
 // @desc  GET ALL COMMENTS BY POST
 // @route GET /api/v1/comments/post/:id
@@ -32,36 +33,29 @@ exports.getCommentsByPost = async (req, res, next) => {
 // @desc  CREATE A COMMENT
 // @route POST /api/v1/comments/
 // @access Public
-exports.createComment = async (req, res, next) => {
-	try {
-		const { userId } = jwt.decode(req.cookies.token);
-		if (!userId) {
-			return res.status(401).json({ success: false, error: 'Unauthorized' });
-		}
-		const { commentTxt, postId } = req.body;
-		const newComment = await comment.create({
-			data: {
-				content: commentTxt,
-				post: {
-					connect: {
-						id: Number(postId),
-					},
-				},
-				user: {
-					connect: {
-						id: Number(userId),
-					},
+exports.createComment = asyncHandler(async (req, res, next) => {
+	const { userId } = jwt.decode(req.cookies.token);
+	if (!userId) {
+		return res.status(401).json({ success: false, error: 'Unauthorized' });
+	}
+	const { commentTxt, postId } = req.body;
+	const newComment = await comment.create({
+		data: {
+			content: commentTxt,
+			post: {
+				connect: {
+					id: Number(postId),
 				},
 			},
-		});
-		res
-			.status(201)
-			.json({ success: true, data: { message: 'Comment created' } });
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({ success: false, error: err.message });
-	}
-};
+			user: {
+				connect: {
+					id: Number(userId),
+				},
+			},
+		},
+	});
+	res.status(201).json({ success: true, data: { message: 'Comment created' } });
+});
 
 // @desc  DELETE A COMMENT
 // @route DELETE /api/v1/comments/:id
