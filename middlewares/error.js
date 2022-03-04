@@ -3,9 +3,7 @@ const ErrorResponse = require('../utils/ErrorResponse');
 
 const errorHandler = async (err, req, res, next) => {
 	//Loading prismaErrorList
-
 	let currentError = err;
-
 	currentError.Message = err.Message;
 
 	console.log(currentError.stack.blue);
