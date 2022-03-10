@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const colors = require('colors');
 const cookieParser = require('cookie-parser');
 const errorHandler = require('./middlewares/error');
+const cors = require('cors');
 
 // Route files
 const users = require('./routes/users');
@@ -15,6 +16,14 @@ const auth = require('./routes/auth');
 dotenv.config({ path: './config/config.env' });
 
 const app = express();
+
+//CORS
+app.use(
+	cors({
+		origin: 'http://localhost:4200',
+		credentials: true,
+	})
+);
 
 // Body parser
 app.use(express.json());
