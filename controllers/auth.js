@@ -111,7 +111,6 @@ exports.login = async (req, res, next) => {
 		.cookie('token', token, options)
 		.status(200)
 		.json({ success: true, token });
-	localStorage.setItem('token', token);
 };
 
 // @desc Logout user
