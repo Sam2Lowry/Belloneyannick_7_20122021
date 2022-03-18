@@ -22,9 +22,7 @@ exports.getCommentsByPost = async (req, res, next) => {
 				.status(404)
 				.json({ success: false, error: 'No comments found' });
 		}
-		res
-			.status(200)
-			.json({ success: true, count: comments.length, data: comments });
+		res.status(200).json(comments);
 	} catch (err) {
 		res.status(500).json({ success: false, error: err.message });
 	}
