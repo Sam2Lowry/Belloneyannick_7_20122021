@@ -10,11 +10,11 @@ exports.getPosts = async (req, res, next) => {
 	try {
 		const posts = await post.findMany();
 		if (!posts) {
-			return res.status(404).json({ success: false, error: 'No posts found' });
+			return res.status(404).json('No posts found');
 		}
-		res.status(200).json({ success: true, count: posts.length, data: posts });
+		res.status(200).json(posts);
 	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
+		res.status(500).json(err.message);
 	}
 };
 
@@ -32,9 +32,9 @@ exports.getAllPosts = async (req, res, next) => {
 			},
 		});
 		if (!posts) {
-			return res.status(404).json({ success: false, error: 'Post not found' });
+			return res.status(404).json('Post not found');
 		}
-		res.status(200).json({ success: true, count: posts.length, data: posts });
+		res.status(200).json(posts);
 	} catch (err) {}
 };
 
@@ -52,9 +52,9 @@ exports.getPost = async (req, res, next) => {
 		if (!getPost) {
 			return res.status(404).json({ success: false, error: 'Post not found' });
 		}
-		res.status(200).json({ success: true, data: getPost });
+		res.status(200).json(getPost);
 	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
+		res.status(500).json(err.message);
 	}
 };
 
@@ -73,9 +73,9 @@ exports.createPost = async (req, res, next) => {
 				author_id: userId,
 			},
 		});
-		res.status(201).json({ success: true, data: newPost });
+		res.status(201).json(newPost);
 	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
+		res.status(500).json(err.message);
 	}
 };
 
@@ -92,11 +92,11 @@ exports.updatePost = async (req, res, next) => {
 			},
 		});
 		if (!post) {
-			return res.status(404).json({ success: false, error: 'Post not found' });
+			return res.status(404).json('Post not found');
 		}
 		// Make sure the user is the author of the post or an admin
 		if (userId !== post.author_id && role !== 'admin') {
-			return res.status(401).json({ success: false, error: 'Unauthorized' });
+			return res.status(401).json('Unauthorized');
 		}
 		const { title, content } = req.body;
 		const updatedPost = await post.update({
@@ -108,9 +108,9 @@ exports.updatePost = async (req, res, next) => {
 				content: content,
 			},
 		});
-		res.status(200).json({ success: true, data: updatedPost });
+		res.status(200).json(updatedPost);
 	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
+		res.status(500).json(err.message);
 	}
 };
 
@@ -127,11 +127,11 @@ exports.deletePost = async (req, res, next) => {
 			},
 		});
 		if (!postExist) {
-			return res.status(404).json({ success: false, error: 'Post not found' });
+			return res.status(404).json('Post not found');
 		}
 		// Make sure the user is the author of the post or an admin
 		if (userId === post.author_id || role === 'admin') {
-			return res.status(401).json({ success: false, error: 'Unauthorized' });
+			return res.status(401).json('Unauthorized');
 		}
 
 		const deletedPost = await post.delete({
@@ -139,8 +139,8 @@ exports.deletePost = async (req, res, next) => {
 				id: Number(id),
 			},
 		});
-		res.status(200).json({ success: true, data: deletedPost });
+		res.status(200).json(deletedPost);
 	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
+		res.status(500).json(err.message);
 	}
 };

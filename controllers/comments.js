@@ -36,7 +36,7 @@ exports.getCommentsByPost = async (req, res, next) => {
 exports.createComment = asyncHandler(async (req, res, next) => {
 	const { userId } = jwt.decode(req.cookies.token);
 	if (!userId) {
-		return res.status(401).json({ success: false, error: 'Unauthorized' });
+		return res.status(401).json('Unauthorized');
 	}
 	const { commentTxt, postId } = req.body;
 	const newComment = await comment.create({
@@ -54,7 +54,7 @@ exports.createComment = asyncHandler(async (req, res, next) => {
 			},
 		},
 	});
-	res.status(201).json({ success: true, data: { message: 'Comment created' } });
+	res.status(201).json('Comment created');
 });
 
 // @desc  DELETE A COMMENT
@@ -70,13 +70,11 @@ exports.deleteComment = async (req, res, next) => {
 			},
 		});
 		if (!commentExist) {
-			return res
-				.status(404)
-				.json({ success: false, error: 'Comment not found' });
+			return res.status(404).json('Comment not found');
 		}
 		// Make sure the user is the author of the comment or an admin
 		if (userId === comment.author_id || role === 'admin') {
-			return res.status(401).json({ success: false, error: 'Unauthorized' });
+			return res.status(401).json('Unauthorized');
 		}
 
 		const deletedComment = await comment.delete({
@@ -84,8 +82,8 @@ exports.deleteComment = async (req, res, next) => {
 				id: Number(id),
 			},
 		});
-		res.status(200).json({ success: true, data: deletedComment });
+		res.status(200).json(deletedComment);
 	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
+		res.status(500).json(err.message);
 	}
 };

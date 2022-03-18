@@ -10,9 +10,9 @@ const { user } = new PrismaClient();
 exports.getUsers = async (req, res, next) => {
 	try {
 		const users = await user.findMany();
-		res.status(200).json({ success: true, count: users.length, data: users });
+		res.status(200).json(users);
 	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
+		res.status(500).json(err.message);
 	}
 };
 
@@ -28,13 +28,13 @@ exports.getUser = async (req, res, next) => {
 			},
 		});
 		if (!getUser) {
-			return res.status(400).json({ success: false, error: 'User not found' });
+			return res.status(400).json('User not found');
 		} else {
 			res.status(200).json(getUser);
 			/*res.status(200).json({ success: true, data: getUser });*/
 		}
 	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
+		res.status(500).json(err.message);
 	}
 };
 
@@ -54,14 +54,12 @@ exports.updateUser = async (req, res, next) => {
 					...req.body,
 				},
 			});
-			return res
-				.status(200)
-				.json({ success: true, data: { message: 'User updated' } });
+			return res.status(200).json('User updated');
 		} else {
-			return res.status(401).json({ success: false, error: 'Unauthorized' });
+			return res.status(401).json('Unauthorized');
 		}
 	} catch (err) {
-		return res.status(500).json({ success: false, error: err.message });
+		return res.status(500).json(err.message);
 	}
 };
 
@@ -78,12 +76,9 @@ exports.deleteUser = async (req, res, next) => {
 					id: Number(id),
 				},
 			});
-			return res
-				.status(200)
-				.json({ success: true, data: { message: 'User deleted' } });
-		} else
-			return res.status(401).json({ success: false, error: 'Unauthorized' });
+			return res.status(200).json('User deleted');
+		} else return res.status(401).json('Unauthorized');
 	} catch (err) {
-		res.status(500).json({ success: false, error: err.message });
+		res.status(500).json(err.message);
 	}
 };
