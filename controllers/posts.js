@@ -63,7 +63,9 @@ exports.getPost = async (req, res, next) => {
 // @access Public
 exports.createPost = async (req, res, next) => {
 	try {
-		const { userId } = jwt.decode(req.cookies.token);
+		// Get the user id from the token
+		token = req.headers.authorization.split(' ')[1];
+		const { userId } = jwt.decode(token);
 		console.log(userId);
 		const { title, content } = req.body;
 		const newPost = await post.create({
