@@ -67,12 +67,30 @@ exports.createPost = async (req, res, next) => {
 		token = req.headers.authorization.split(' ')[1];
 		const { userId } = jwt.decode(token);
 		console.log(userId);
+
+		// get profile_image_url from user
+		const postUser = await post.findUnique({
+			where: {
+				user: {
+					id: Number(userId),
+				},
+			},
+		});
+		console.log(postUser);
+		console.log(postUser.profile_image_url);
+		if (!postUser.profile_image_url) {
+			profilePic =
+				'https://i.pinimg.com/1200x/a2/4c/16/a24c161fea2b24bd5967337d1684ff21.jpg';
+		} else {
+			profilePic = postUser.profile_image_url;
+		}
 		const { title, content } = req.body;
 		const newPost = await post.create({
 			data: {
 				title: title,
 				content: content,
 				author_id: userId,
+				profilePic: profilePic,
 			},
 		});
 		res.status(201).json(newPost);
