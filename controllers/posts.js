@@ -121,8 +121,11 @@ exports.updatePost = async (req, res, next) => {
 // @access Private (admin or user)
 exports.deletePost = async (req, res, next) => {
 	try {
+		// Get the user id from url params
 		const { id } = req.params;
-		const { userId, role } = jwt.decode(req.cookies.token);
+		// Get the user id from the token
+		token = req.headers.authorization.split(' ')[1];
+		const { userId, role } = jwt.decode(token);
 		const postExist = await post.findUnique({
 			where: {
 				id: Number(id),
