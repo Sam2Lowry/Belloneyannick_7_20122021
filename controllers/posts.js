@@ -106,13 +106,14 @@ exports.createPost = async (req, res, next) => {
 			profilePic = postUser.profile_image_url;
 		}
 
-		const { title, content } = req.body;
+		const { title, content, image_url } = req.body;
 		const newPost = await post.create({
 			data: {
 				title: title,
 				content: content,
 				author_id: userId,
 				profilePic: profilePic,
+				image_url: image_url,
 			},
 		});
 		res.status(201).json(newPost);
