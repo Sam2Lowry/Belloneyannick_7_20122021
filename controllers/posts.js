@@ -9,7 +9,16 @@ const jwt = require('jsonwebtoken');
 // @access Public
 exports.getPosts = async (req, res, next) => {
 	try {
-		const posts = await post.findMany();
+		const posts = await post.findMany({
+			include: {
+				_count: {
+					select: {
+						comment: true,
+					},
+				},
+			},
+		});
+
 		if (!posts) {
 			return res.status(404).json('No posts found');
 		}
@@ -29,6 +38,13 @@ exports.getAllPosts = async (req, res, next) => {
 			where: {
 				user: {
 					id: Number(id),
+				},
+			},
+			include: {
+				_count: {
+					select: {
+						comment: true,
+					},
 				},
 			},
 		});
