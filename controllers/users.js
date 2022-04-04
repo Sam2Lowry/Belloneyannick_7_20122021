@@ -27,6 +27,11 @@ exports.getUser = async (req, res, next) => {
 				id: Number(id),
 			},
 		});
+		if (getUser.profile_image_url === null) {
+			getUser.profile_image_url =
+				'https://i.pinimg.com/1200x/a2/4c/16/a24c161fea2b24bd5967337d1684ff21.jpg';
+		}
+
 		if (!getUser) {
 			return res.status(400).json('User not found');
 		} else {
