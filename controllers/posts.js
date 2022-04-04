@@ -1,6 +1,7 @@
 // Importation des modèles Post de Prisma
 const { PrismaClient } = require('@prisma/client');
 const { post } = new PrismaClient();
+const { user } = new PrismaClient();
 const jwt = require('jsonwebtoken');
 
 // @desc  GET ALL POST
@@ -48,9 +49,16 @@ exports.getPost = async (req, res, next) => {
 			where: {
 				id: Number(id),
 			},
+			include: {
+				_count: {
+					select: {
+						comment: true,
+					},
+				},
+			},
 		});
 		if (!getPost) {
-			return res.status(404).json({ success: false, error: 'Post not found' });
+			return res.status(404).json('Post not found');
 		}
 		res.status(200).json(getPost);
 	} catch (err) {
@@ -69,21 +77,19 @@ exports.createPost = async (req, res, next) => {
 		console.log(userId);
 
 		// get profile_image_url from user
-		const postUser = await post.findUnique({
+		const postUser = await user.findUnique({
 			where: {
-				user: {
-					id: Number(userId),
-				},
+				id: Number(userId),
 			},
 		});
 		console.log(postUser);
-		console.log(postUser.profile_image_url);
-		if (!postUser.profile_image_url) {
+		if (postUser.profile_image_url === null) {
 			profilePic =
 				'https://i.pinimg.com/1200x/a2/4c/16/a24c161fea2b24bd5967337d1684ff21.jpg';
 		} else {
 			profilePic = postUser.profile_image_url;
 		}
+
 		const { title, content } = req.body;
 		const newPost = await post.create({
 			data: {

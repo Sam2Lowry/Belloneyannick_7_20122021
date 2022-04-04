@@ -28,6 +28,7 @@ model post {
   title         String?   @db.VarChar(255)
   content       String    @db.VarChar(1200)
   image_url     String?   @db.VarChar(510)
+  profilePic    String?   @db.VarChar(510)
   author_id     Int       @db.UnsignedInt
   date_creation DateTime  @default(now()) @db.DateTime(0)
   date_update   DateTime  @default(now()) @db.DateTime(0)
