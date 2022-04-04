@@ -1,6 +1,7 @@
 // Importation des modèles Post de Prisma
 const { PrismaClient } = require('@prisma/client');
 const { post } = new PrismaClient();
+const { user } = new PrismaClient();
 const jwt = require('jsonwebtoken');
 
 // @desc  GET ALL POST
@@ -8,7 +9,16 @@ const jwt = require('jsonwebtoken');
 // @access Public
 exports.getPosts = async (req, res, next) => {
 	try {
-		const posts = await post.findMany();
+		const posts = await post.findMany({
+			include: {
+				_count: {
+					select: {
+						comment: true,
+					},
+				},
+			},
+		});
+
 		if (!posts) {
 			return res.status(404).json('No posts found');
 		}
@@ -30,6 +40,13 @@ exports.getAllPosts = async (req, res, next) => {
 					id: Number(id),
 				},
 			},
+			include: {
+				_count: {
+					select: {
+						comment: true,
+					},
+				},
+			},
 		});
 		if (!posts) {
 			return res.status(404).json('Post not found');
@@ -48,9 +65,16 @@ exports.getPost = async (req, res, next) => {
 			where: {
 				id: Number(id),
 			},
+			include: {
+				_count: {
+					select: {
+						comment: true,
+					},
+				},
+			},
 		});
 		if (!getPost) {
-			return res.status(404).json({ success: false, error: 'Post not found' });
+			return res.status(404).json('Post not found');
 		}
 		res.status(200).json(getPost);
 	} catch (err) {
@@ -67,12 +91,28 @@ exports.createPost = async (req, res, next) => {
 		token = req.headers.authorization.split(' ')[1];
 		const { userId } = jwt.decode(token);
 		console.log(userId);
+
+		// get profile_image_url from user
+		const postUser = await user.findUnique({
+			where: {
+				id: Number(userId),
+			},
+		});
+		console.log(postUser);
+		if (postUser.profile_image_url === null) {
+			profilePic =
+				'https://i.pinimg.com/1200x/a2/4c/16/a24c161fea2b24bd5967337d1684ff21.jpg';
+		} else {
+			profilePic = postUser.profile_image_url;
+		}
+
 		const { title, content } = req.body;
 		const newPost = await post.create({
 			data: {
 				title: title,
 				content: content,
 				author_id: userId,
+				profilePic: profilePic,
 			},
 		});
 		res.status(201).json(newPost);
@@ -121,8 +161,11 @@ exports.updatePost = async (req, res, next) => {
 // @access Private (admin or user)
 exports.deletePost = async (req, res, next) => {
 	try {
+		// Get the user id from url params
 		const { id } = req.params;
-		const { userId, role } = jwt.decode(req.cookies.token);
+		// Get the user id from the token
+		token = req.headers.authorization.split(' ')[1];
+		const { userId, role } = jwt.decode(token);
 		const postExist = await post.findUnique({
 			where: {
 				id: Number(id),
