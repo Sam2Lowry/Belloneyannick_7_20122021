@@ -30,7 +30,11 @@ exports.getCommentsByPost = async (req, res, next) => {
 // @route POST /api/v1/comments/
 // @access Public
 exports.createComment = asyncHandler(async (req, res, next) => {
-	const { userId } = jwt.decode(req.cookies.token);
+	// Get the user id from the token
+	token = req.headers.authorization.split(' ')[1];
+	const { userId } = jwt.decode(token);
+	console.log(userId);
+	// Check if the user is logged in
 	if (!userId) {
 		return res.status(401).json('Unauthorized');
 	}
@@ -59,7 +63,12 @@ exports.createComment = asyncHandler(async (req, res, next) => {
 exports.deleteComment = async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		const { userId, role } = jwt.decode(req.cookies.token);
+
+		// Get the user id from the token
+		token = req.headers.authorization.split(' ')[1];
+		const { userId, role } = jwt.decode(token);
+		console.log(userId);
+
 		const commentExist = await comment.findUnique({
 			where: {
 				id: Number(id),
