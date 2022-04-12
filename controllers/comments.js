@@ -18,7 +18,7 @@ exports.getCommentsByPost = async (req, res, next) => {
 			},
 		});
 		if (comments.length === 0) {
-			return res.status(404).json('No comments found');
+			return res.status(204).json('No comments found');
 		}
 		res.status(200).json(comments);
 	} catch (err) {
