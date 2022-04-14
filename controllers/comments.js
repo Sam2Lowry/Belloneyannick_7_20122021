@@ -32,7 +32,7 @@ exports.getCommentsByPost = async (req, res, next) => {
 exports.createComment = asyncHandler(async (req, res, next) => {
 	// Get the user id from the token
 	token = req.headers.authorization.split(' ')[1];
-	const { userId } = jwt.decode(token);
+	const { userId, display_name } = jwt.decode(token);
 	console.log(userId);
 	// Check if the user is logged in
 	if (!userId) {
@@ -42,6 +42,7 @@ exports.createComment = asyncHandler(async (req, res, next) => {
 	const newComment = await comment.create({
 		data: {
 			content: commentTxt,
+			commentAuthor: display_name,
 			post: {
 				connect: {
 					id: Number(postId),

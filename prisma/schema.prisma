@@ -43,6 +43,7 @@ model comment {
   content       String   @db.VarChar(510)
   post_id       Int      @db.UnsignedInt
   author_id     Int      @db.UnsignedInt
+  commentAuthor String?  @db.VarChar(255)
   date_creation DateTime @default(now()) @db.DateTime(0)
   date_update   DateTime @default(now()) @db.DateTime(0)
   user          user     @relation(fields: [author_id], references: [id], onDelete: Cascade)
